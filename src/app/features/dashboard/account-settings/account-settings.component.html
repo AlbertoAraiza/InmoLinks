@@ -1,0 +1,90 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        
+        <h2 class="fw-bold mb-4">Información de Cuenta</h2>
+
+        <!-- Profile Card -->
+        <mat-card class="shadow-sm border-0 rounded-4 mb-4">
+            <mat-card-content class="p-4" *ngIf="authService.currentProfile$ | async as profile">
+                <div class="d-flex flex-column flex-md-row align-items-center">
+                    
+                    <div class="position-relative me-md-5 mb-4 mb-md-0 text-center">
+                        <img [src]="profile.profilePhotoUrl || 'assets/default-avatar.png'" class="rounded-circle shadow-sm mb-2" width="120" height="120" style="object-fit: cover;">
+                        
+                        <div class="mt-2">
+                            <input type="file" #photoInput class="d-none" accept="image/*" (change)="onPhotoSelected($event)">
+                            <button mat-stroked-button color="primary" class="rounded-pill" (click)="photoInput.click()" [disabled]="isUploading">
+                                <mat-icon *ngIf="!isUploading">cloud_upload</mat-icon>
+                                <span *ngIf="!isUploading">Cambiar Foto</span>
+                                <span *ngIf="isUploading">Subiendo...</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow-1 w-100">
+                        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+                            <mat-form-field appearance="outline" class="w-100 mb-2">
+                                <mat-label>Nombre Completo</mat-label>
+                                <input matInput formControlName="fullName">
+                            </mat-form-field>
+                            
+                            <mat-form-field appearance="outline" class="w-100 mb-2">
+                                <mat-label>Celular</mat-label>
+                                <span matTextPrefix>+52 &nbsp;</span>
+                                <input matInput formControlName="phoneNumber">
+                                <mat-hint>El número de celular está vinculado a tu inicio de sesión y no puede modificarse.</mat-hint>
+                            </mat-form-field>
+                            
+                            <div class="text-end">
+                                <button mat-flat-button color="primary" class="rounded-pill px-4" type="submit" [disabled]="profileForm.invalid || isLoading">
+                                   GUARDAR CAMBIOS
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Subscription Plan Card -->
+        <h3 class="fw-bold mb-3 mt-5">Mi Plan en InmoLinks</h3>
+        <mat-card class="shadow-sm border-0 rounded-4 mb-4 bg-light">
+            <mat-card-content class="p-4" *ngIf="currentStatus">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold fs-3 text-primary mb-0">Plan {{ currentStatus.plan }}</h4>
+                    </div>
+                </div>
+
+                <div class="mb-4 text-muted">
+                    <p class="mb-1"><mat-icon class="align-middle me-2 fs-5" style="width: 20px; height: 20px;">home_work</mat-icon> Límite de propiedades: <strong class="text-dark">{{ currentStatus.limit === 1 ? '1' : (currentStatus.limit > 1000 ? 'Ilimitado' : currentStatus.limit) }}</strong></p>
+                    <p class="mb-1" *ngIf="currentStatus.plan === 'Free'"><mat-icon class="align-middle me-2 fs-5 text-warning" style="width: 20px; height: 20px;">ads_click</mat-icon> Anuncios habilitados</p>
+                    <p class="mb-1" *ngIf="currentStatus.plan !== 'Free'"><mat-icon class="align-middle me-2 fs-5 text-success" style="width: 20px; height: 20px;">block</mat-icon> Cero anuncios</p>
+                    
+                    <p class="mb-1 mt-3" *ngIf="currentStatus.plan !== 'Free' && currentStatus.daysRemaining">
+                        <mat-icon class="align-middle me-2 fs-5" style="width: 20px; height: 20px;">event</mat-icon> Te quedan <strong class="text-primary">{{ currentStatus.daysRemaining }} días</strong> (Vence el {{ currentStatus.expiresAt | date:'dd/MM/yyyy' }})
+                    </p>
+                </div>
+
+                <div class="alert alert-warning border-0 d-flex align-items-center" *ngIf="currentStatus.plan === 'Free'">
+                    <mat-icon class="me-3">info</mat-icon>
+                    <div>
+                       Estás en el plan básico. Tus prospectos verán publicidad en el enlace de tus propiedades, y estás limitado a publicar 1 propiedad activa a la vez.
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-12 col-sm-6">
+                        <button mat-flat-button class="w-100 py-3 rounded-pill fw-bold text-dark shadow-sm" style="background-color: #ffd700;" (click)="startCheckout('VIP')">CONTRATAR VIP ($99/mes)</button>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <button mat-flat-button color="accent" class="w-100 py-3 rounded-pill fw-bold shadow-sm" (click)="startCheckout('Premium')">CONTRATAR PREMIUM ($199/mes)</button>
+                    </div>
+                </div>
+
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+</div>

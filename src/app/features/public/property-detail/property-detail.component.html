@@ -1,0 +1,172 @@
+<!-- Loading UI -->
+<div class="d-flex justify-content-center align-items-center vh-100" *ngIf="isLoading">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<!-- Not Found Error -->
+<div class="container py-5 text-center mt-5" *ngIf="!isLoading && !property">
+    <mat-icon style="font-size: 80px; width: 80px; height: 80px;" color="warn">error_outline</mat-icon>
+    <h2 class="mt-4 fw-bold">Propiedad no disponible</h2>
+    <p class="text-muted">La propiedad que buscas no existe o ha sido dada de baja por el asesor.</p>
+</div>
+
+<!-- Property View -->
+<div class="container-fluid p-0 mb-5 pb-5" *ngIf="!isLoading && property">
+    
+    <!-- Hero Image Carousel -->
+    <div class="position-relative w-100 bg-black" style="height: 50vh; overflow: hidden;">
+        
+        <!-- Native Bootstrap Carousel -->
+        <div id="propertyCarousel" class="carousel slide h-100" data-bs-ride="carousel" *ngIf="property.media?.images?.length">
+            
+            <!-- Indicators -->
+            <div class="carousel-indicators mb-4 z-3" *ngIf="property.media!.images!.length > 1">
+                <button *ngFor="let img of property.media?.images; let i = index" 
+                        type="button" 
+                        data-bs-target="#propertyCarousel" 
+                        [attr.data-bs-slide-to]="i" 
+                        [class.active]="i === 0" 
+                        aria-current="true" 
+                        [attr.aria-label]="'Slide ' + i"></button>
+            </div>
+
+            <div class="carousel-inner h-100">
+                <div class="carousel-item h-100" 
+                     *ngFor="let img of property.media?.images; let i = index" 
+                     [class.active]="i === 0"
+                     (click)="openLightbox(i)"
+                     style="cursor: zoom-in;">
+                    <img [src]="img" class="d-block w-100 h-100" style="object-fit: cover; opacity: 0.9;" alt="Property Image">
+                </div>
+            </div>
+            
+            <!-- Default Controls -->
+            <button class="carousel-control-prev z-3" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev" *ngIf="property.media!.images!.length > 1">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle p-3 shadow" aria-hidden="true" style="opacity: 0.8 !important;"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next z-3" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next" *ngIf="property.media!.images!.length > 1">
+                <span class="carousel-control-next-icon bg-dark rounded-circle p-3 shadow" aria-hidden="true" style="opacity: 0.8 !important;"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- Fallback for no images -->
+        <div *ngIf="!property.media?.images?.length" class="d-flex w-100 h-100 justify-content-center align-items-center bg-dark text-white opacity-50">
+            <mat-icon style="font-size: 64px; width: 64px; height: 64px;">insert_photo</mat-icon>
+            <span class="ms-3 fs-3">Sin Fotografías</span>
+        </div>
+        
+        <!-- Navbar Overlay with Logo -->
+        <div class="position-absolute top-0 w-100 p-3 d-flex justify-content-between align-items-center z-3" style="background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);">
+            <div class="d-flex align-items-center">
+                <img src="logo-inmolinks.png" class="me-2" height="32" alt="InmoLinks Logo">
+                <h4 class="text-white fw-bold mb-0">InmoLinks</h4>
+            </div>
+            <div>
+                 <button mat-icon-button class="bg-white rounded-circle shadow-sm" (click)="copyLink()"><mat-icon color="primary">share</mat-icon></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="container mt-4" style="max-width: 900px;">
+        <div class="row">
+
+            <!-- Title & Price Block -->
+            <div class="col-12 mb-4">
+                <span class="badge bg-primary rounded-pill mb-2 px-3 py-2 fw-normal f-14">EN VENTA</span>
+                <h1 class="fw-bold fs-2 text-dark">{{ property.title }}</h1>
+                <p class="text-muted f-16 mb-2">
+                    <mat-icon class="align-middle me-1" style="font-size: 18px; width: 18px; height: 18px;">location_on</mat-icon>
+                    {{ property.location.neighborhood }}, {{ property.location.city }} (Zona {{ property.location.zone }})
+                </p>
+                <h2 class="text-primary fw-bolder" style="font-size: 2.2rem;">{{ property.price | currency:property.currency:'symbol':'1.0-0' }}</h2>
+            </div>
+            
+            <hr class="mb-4">
+
+            <!-- Key Features -->
+            <div class="col-12 mb-4">
+                <h4 class="fw-bold mb-3">Ficha Técnica</h4>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="p-3 bg-light rounded-4 text-center border-0" style="width: 120px;">
+                        <mat-icon color="accent" class="mb-1">bed</mat-icon>
+                        <h5 class="fw-bold mb-0">{{ property.features.bedrooms }}</h5>
+                        <small class="text-muted">Recámaras</small>
+                    </div>
+                    <div class="p-3 bg-light rounded-4 text-center border-0" style="width: 120px;">
+                        <mat-icon color="accent" class="mb-1">shower</mat-icon>
+                        <h5 class="fw-bold mb-0">{{ property.features.bathrooms }}</h5>
+                        <small class="text-muted">Baños</small>
+                    </div>
+                    <div class="p-3 bg-light rounded-4 text-center border-0" style="width: 120px;">
+                        <mat-icon color="accent" class="mb-1">landscape</mat-icon>
+                        <h5 class="fw-bold mb-0">{{ property.features.landAreaSqM }} m²</h5>
+                        <small class="text-muted">Terreno</small>
+                    </div>
+                    <div class="p-3 bg-light rounded-4 text-center border-0" style="width: 120px;">
+                        <mat-icon color="accent" class="mb-1">home_work</mat-icon>
+                        <h5 class="fw-bold mb-0">{{ property.features.constructionAreaSqM }} m²</h5>
+                        <small class="text-muted">Construcción</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12 mb-5">
+                <h4 class="fw-bold mb-3">Descripción de la Propiedad</h4>
+                <p class="text-secondary lh-lg" style="white-space: pre-wrap;">{{ property.description }}</p>
+            </div>
+
+            <!-- Map View (Option B) -->
+            <div class="col-12 mb-5 pb-5">
+                <h4 class="fw-bold mb-3">Ubicación de Referencia</h4>
+                
+                <div *ngIf="mapLoaded && property.location.approxLat && property.location.approxLng" class="rounded-4 overflow-hidden border shadow-sm w-100 bg-light position-relative" style="height: 350px;">
+                    <google-map [center]="mapCenter" [zoom]="mapZoom" width="100%" height="350px" [options]="mapOptions">
+                        <!-- We use a translucent circle to hide the exact marker -->
+                        <map-circle [center]="mapCenter" [options]="circleOptions"></map-circle>
+                    </google-map>
+                    
+                    <!-- Floating Badge info -->
+                    <div class="position-absolute top-0 start-0 m-3 shadow-sm bg-white rounded-pill px-3 py-2 d-flex align-items-center opacity-75">
+                        <mat-icon color="primary" class="me-2" style="font-size: 18px; width: 18px; height: 18px;">security</mat-icon>
+                        <span class="small fw-bold text-dark">Ubicación Aproximada</span>
+                    </div>
+                </div>
+
+                <div *ngIf="!mapLoaded || !property.location.approxLat || !property.location.approxLng" class="w-100 rounded-4 bg-light p-5 text-center d-flex flex-column justify-content-center align-items-center border" style="height: 250px;">
+                    <mat-icon style="font-size: 48px; width:48px; height: 48px;" class="text-primary mb-2">map</mat-icon>
+                    <h5 class="fw-bold">Zona {{ property.location.zone }}</h5>
+                    <p class="text-muted small">Por motivos de seguridad, los asesores muestran una ubicación aproximada.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mock AdMob Banner (Visible solo si creador tiene plan Free) -->
+    <div class="fixed-bottom w-100 bg-white text-center shadow border-top border-warning z-2" style="padding: 10px 0; bottom: 80px;" *ngIf="showBannerAd">
+        <span class="badge bg-light text-muted border mb-1" style="font-size: 10px;">Publicidad de AdMob</span>
+        <div class="d-flex justify-content-center align-items-center">
+             <img src="https://via.placeholder.com/320x50.png?text=InmoLinks+Network+-+Anuncio" class="img-fluid" alt="Ad Banner" style="max-height: 50px;">
+        </div>
+    </div>
+
+    <!-- Floating Action Button CTA -->
+    <div class="fixed-bottom p-3 bg-white border-top shadow-lg d-flex justify-content-between align-items-center z-3" style="max-height: 80px;">
+        <div class="d-flex align-items-center d-none d-sm-flex">
+            <img [src]="property.advisorProfilePhoto || 'assets/default-avatar.png'" class="rounded-circle me-3" width="48" height="48" style="object-fit: cover;">
+            <div>
+                <p class="mb-0 fw-bold lh-sm">{{ property.advisorName }}</p>
+                <small class="text-muted">Asesor Inmobiliario</small>
+            </div>
+        </div>
+        
+        <button mat-flat-button class="fw-bold py-4 fs-6 rounded-pill flex-grow-1 ms-sm-4 text-white" style="background-color: #25D366;" (click)="contactAgent()">
+            <mat-icon fontIcon="chat" class="me-2"></mat-icon> ME INTERESA ESTA PROPIEDAD
+        </button>
+    </div>
+
+</div>

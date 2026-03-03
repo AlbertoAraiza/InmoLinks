@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0 fw-bold text-dark">Mis Propiedades <span class="badge bg-primary rounded-pill small ms-2">{{ properties.length }}</span></h2>
+  <button mat-flat-button color="accent" class="rounded-pill px-4 shadow-sm fw-bold" (click)="checkAddProperty()">
+    <mat-icon>add</mat-icon> NUEVA PROPIEDAD
+  </button>
+</div>
+
+<!-- Loading State -->
+<div class="text-center py-5" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<!-- Empty State -->
+<div class="card border-0 shadow-sm rounded-4 text-center p-5 mb-4 bg-white" *ngIf="!isLoading && properties.length === 0">
+  <mat-icon color="primary" style="font-size: 64px; width: 64px; height: 64px; opacity: 0.5;">home_work</mat-icon>
+  <h3 class="fw-bold mt-3">Aún no tienes propiedades publicadas</h3>
+  <p class="text-muted mb-4 d-block mx-auto" style="max-width: 400px;">
+    Sube las fotos y descripción de tu primera casa en venta. 
+    Te entregaremos un enlace único para compartir por WhatsApp con tus clientes.
+  </p>
+  <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="checkAddProperty()">
+    Crear mi primer publicación
+  </button>
+</div>
+
+<!-- Grid of Properties -->
+<div class="row g-4" *ngIf="!isLoading && properties.length > 0">
+  <div class="col-12 col-md-6 col-lg-4" *ngFor="let p of properties">
+    <mat-card class="h-100 shadow-sm rounded-4 overflow-hidden border-0">
+      
+      <!-- Placeholder Img para el Mockup // Idealmente vendría de p.media.images[0] -->
+      <div style="height: 200px; background-color: #e9ecef; position: relative;" class="w-100">
+         <img *ngIf="p.media?.images?.length" [src]="p.media.images[0]" class="w-100 h-100" style="object-fit: cover;">
+         <div *ngIf="!p.media?.images?.length" class="w-100 h-100 d-flex align-items-center justify-content-center text-secondary">
+            <mat-icon>insert_photo</mat-icon>
+         </div>
+
+         <!-- Status Badge -->
+         <span class="position-absolute top-0 end-0 m-3 badge rounded-pill" 
+               [ngClass]="{'bg-success': p.status === 'published', 'bg-warning text-dark': p.status === 'draft', 'bg-danger': p.status === 'sold'}">
+            {{ p.status | uppercase }}
+         </span>
+      </div>
+
+      <mat-card-content class="p-3">
+        <h5 class="fw-bold text-truncate mb-1" [title]="p.title">{{ p.title }}</h5>
+        <h4 class="text-primary fw-bold mb-3">{{ p.price | currency:'MXN':'symbol':'1.0-0' }}</h4>
+        
+        <p class="text-muted small mb-2 d-flex align-items-center">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px;" class="me-1">place</mat-icon> 
+            {{ p.location?.neighborhood }}, {{ p.location?.city }} ({{ p.location?.zone }})
+        </p>
+
+        <mat-chip-set aria-label="Características" class="mb-3 d-flex flex-nowrap overflow-hidden">
+            <mat-chip><mat-icon fontIcon="bed"></mat-icon> {{ p.features?.bedrooms }}</mat-chip>
+            <mat-chip><mat-icon fontIcon="shower"></mat-icon> {{ p.features?.bathrooms }}</mat-chip>
+            <mat-chip><mat-icon fontIcon="square_foot"></mat-icon> {{ p.features?.constructionAreaSqM }}m²</mat-chip>
+        </mat-chip-set>
+      </mat-card-content>
+      
+      <mat-card-actions class="p-3 pt-0 border-top mt-auto bg-light d-flex justify-content-between">
+        <button mat-button class="text-dark fw-bold px-2 rounded-3 text-start" (click)="copyLink(p.id)">
+            <mat-icon>content_copy</mat-icon> Link
+        </button>
+        <div>
+          <button mat-icon-button color="primary" [routerLink]="['edit', p.id]"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="confirmDelete(p.id)"><mat-icon>delete_outline</mat-icon></button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

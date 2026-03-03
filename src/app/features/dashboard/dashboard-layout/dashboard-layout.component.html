@@ -1,0 +1,60 @@
+<!-- App Toolbar -->
+<mat-toolbar color="primary" class="shadow-sm mat-elevation-z2 position-sticky top-0 z-3">
+  <button mat-icon-button (click)="isSidebarOpen = !isSidebarOpen" class="d-md-none me-2">
+    <mat-icon>menu</mat-icon>
+  </button>
+  
+  <a routerLink="/dashboard" class="d-flex align-items-center text-decoration-none text-white">
+    <img src="logo-inmolinks.png" class="me-2" height="32" alt="InmoLinks Logo">
+    <span class="fw-bold">InmoLinks Pro</span>
+  </a>
+  
+  <span class="flex-grow-1"></span>
+
+  <div class="d-flex align-items-center" *ngIf="authService.currentProfile$ | async as profile">
+    <span class="d-none d-md-inline me-3 f-14">{{ profile.fullName }}</span>
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <img *ngIf="profile.profilePhotoUrl" [src]="profile.profilePhotoUrl" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+      <mat-icon *ngIf="!profile.profilePhotoUrl">account_circle</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div class="px-3 py-2 d-md-none text-muted border-bottom mb-2">
+        <small>{{ profile.fullName }}</small>
+      </div>
+      <button mat-menu-item routerLink="account">
+         <mat-icon>manage_accounts</mat-icon>
+         <span>Mi Cuenta</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>
+
+<!-- Main Layout Content -->
+<div class="d-flex" style="min-height: calc(100vh - 64px);">
+  
+  <!-- Sidebar for larger screens -->
+  <aside #drawer class="bg-white border-end pt-4 collapse d-md-block" [class.show]="isSidebarOpen" style="width: 250px; transition: 0.3s all;">
+    <div class="list-group list-group-flush">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="list-group-item list-group-item-action border-0 py-3 text-secondary d-flex align-items-center">
+        <mat-icon class="me-3">home</mat-icon> Mis Propiedades
+      </a>
+      <!-- 
+      <a routerLink="/dashboard/leads" routerLinkActive="active" class="list-group-item list-group-item-action border-0 py-3 text-secondary d-flex align-items-center">
+        <mat-icon class="me-3">people</mat-icon> Mis Leads
+      </a> 
+      -->
+    </div>
+  </aside>
+
+  <!-- Content Area -->
+  <main class="flex-grow-1 bg-light p-3 p-md-4">
+    <div class="container-fluid py-2 max-w-1200">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>

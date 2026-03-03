@@ -1,0 +1,45 @@
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+  <div class="row w-100">
+    <div class="col-12 col-md-8 col-lg-5 mx-auto">
+      <div class="card shadow-sm border-0 p-4 p-md-5 rounded-4 bg-white text-center">
+        
+        <div class="mb-4">
+          <mat-icon color="accent" style="font-size: 56px; width: 56px; height: 56px;">account_circle</mat-icon>
+          <h2 class="fw-bold mt-2 text-dark">Completa tu Perfil</h2>
+          <p class="text-muted">Estás a un paso de comenzar a vender.</p>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+
+          <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Nombre Completo</mat-label>
+            <input matInput formControlName="fullName" placeholder="Ej. Juan Pérez">
+            <mat-icon matPrefix class="text-secondary me-2">badge</mat-icon>
+            <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">Requerimos conocer tu nombre para las publicaciones.</mat-error>
+          </mat-form-field>
+
+          <div class="mb-4 text-start">
+            <label class="form-label text-muted small ms-1 fw-bold">Foto de Perfil (Opcional)</label>
+            <div class="d-flex align-items-center">
+                <img *ngIf="photoPreview" [src]="photoPreview" alt="Preview" class="rounded-circle me-3 shadow-sm border" width="60" height="60" style="object-fit: cover;">
+                <mat-icon *ngIf="!photoPreview" class="text-secondary me-3" style="font-size: 60px; width: 60px; height: 60px;">account_circle</mat-icon>
+                <button type="button" mat-stroked-button color="primary" class="rounded-pill" (click)="fileInput.click()">
+                    <mat-icon>cloud_upload</mat-icon> Seleccionar Imagen
+                </button>
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+            </div>
+            <mat-hint class="small text-muted d-block mt-2">Formatos aceptados: JPG, PNG.</mat-hint>
+          </div>
+
+          <button mat-flat-button color="accent" class="w-100 py-4 f-18 fw-bold rounded-pill shadow-sm" [disabled]="profileForm.invalid || isLoading" type="submit">
+            <mat-spinner *ngIf="isLoading" diameter="24" color="primary" class="me-2 d-inline-block align-middle"></mat-spinner>
+            <span *ngIf="!isLoading">INICIAR SESIÓN</span>
+            <mat-icon *ngIf="!isLoading" class="ms-1">login</mat-icon>
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
