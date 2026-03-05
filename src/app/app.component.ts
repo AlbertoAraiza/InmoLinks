@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     const script = document.createElement('script');
     script.id = 'google-maps-script';
     // Using environment key securely outside of public HTML source
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}&libraries=places&loading=async`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);

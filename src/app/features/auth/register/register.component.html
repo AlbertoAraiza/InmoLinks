@@ -1,0 +1,65 @@
+<div class="auth-container d-flex align-items-center justify-content-center vh-100 bg-light p-3">
+    <mat-card class="auth-card shadow-lg border-0 rounded-4 w-100" style="max-width: 450px;">
+        <mat-card-header class="justify-content-center pt-4 pb-0">
+            <div class="text-center">
+                <img src="logo-inmolinks.png" height="48" alt="InmoLinks Pro" class="mb-2">
+                <mat-card-title class="fw-bold fs-4">Crea tu Cuenta</mat-card-title>
+                <mat-card-subtitle>Únete a la red de asesores inmobiliarios</mat-card-subtitle>
+            </div>
+        </mat-card-header>
+
+        <mat-card-content class="p-4 p-md-5">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <!-- Name -->
+                <mat-form-field appearance="outline" class="w-100 mb-2">
+                    <mat-label>Nombre Completo</mat-label>
+                    <input matInput formControlName="fullName" placeholder="Ej. Juan Pérez" autocomplete="name">
+                </mat-form-field>
+
+                <!-- Email -->
+                <mat-form-field appearance="outline" class="w-100 mb-2">
+                    <mat-label>Correo Electrónico</mat-label>
+                    <input matInput type="email" formControlName="email" placeholder="email@ejemplo.com" autocomplete="email">
+                </mat-form-field>
+
+                <!-- Phone -->
+                <mat-form-field appearance="outline" class="w-100 mb-2">
+                    <mat-label>Teléfono (10 dígitos)</mat-label>
+                    <input matInput type="tel" formControlName="phoneNumber" placeholder="3312345678" maxlength="10">
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-hint>Se usará para recibir mensajes de prospectos</mat-hint>
+                </mat-form-field>
+
+                <!-- Password -->
+                <mat-form-field appearance="outline" class="w-100 mb-2">
+                    <mat-label>Contraseña</mat-label>
+                    <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
+                    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+                        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    <mat-hint>8-20 carateres, 1 letra y 1 número</mat-hint>
+                </mat-form-field>
+
+                <!-- Confirm Password -->
+                <mat-form-field appearance="outline" class="w-100 mb-3">
+                    <mat-label>Confirmar Contraseña</mat-label>
+                    <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password">
+                    <mat-error *ngIf="registerForm.hasError('mismatch')">Las contraseñas no coinciden</mat-error>
+                </mat-form-field>
+
+                <button mat-flat-button color="primary" type="submit" 
+                        class="w-100 py-4 fs-6 rounded-pill shadow-sm mt-2" 
+                        [disabled]="registerForm.invalid || isLoading">
+                    <span *ngIf="!isLoading">REGISTRARME</span>
+                    <mat-spinner diameter="24" color="accent" *ngIf="isLoading"></mat-spinner>
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-2">
+                <p class="text-muted mb-0">¿Ya tienes cuenta? 
+                    <a routerLink="/login" class="text-primary text-decoration-none fw-bold">Inicia Sesión</a>
+                </p>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

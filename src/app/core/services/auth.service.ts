@@ -1,18 +1,27 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult, User, authState } from '@angular/fire/auth';
+import {
+    Auth, authState, User,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider
+} from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, writeBatch, collection, query, where, getDocs } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { BehaviorSubject, Observable, from, firstValueFrom } from 'rxjs';
 
 export interface AdvisorProfile {
     uid: string;
+    email: string;
     phoneNumber: string;
     fullName: string;
     profilePhotoUrl: string;
     isActive: boolean;
     createdAt: number;
-    vigenciaVIP?: number; // Guardo timestamp en milisegundos
-    vigenciaPremium?: number; // Guardo timestamp en milisegundos
+    vigenciaVIP?: number;
+    vigenciaPremium?: number;
 }
 
 @Injectable({
@@ -29,9 +38,6 @@ export class AuthService {
 
     private currentProfileSubject = new BehaviorSubject<AdvisorProfile | null>(null);
     public currentProfile$: Observable<AdvisorProfile | null> = this.currentProfileSubject.asObservable();
-
-    private confirmationResult: ConfirmationResult | null = null;
-    private appVerifier: RecaptchaVerifier | null = null;
 
     constructor() {
         this.currentUser$.subscribe(async (user) => {
@@ -52,40 +58,62 @@ export class AuthService {
         return this.currentProfileSubject.value;
     }
 
-    // 1. Initialize Recaptcha (Required for SMS Auth)
-    initRecaptchaPlugin(containerId: string) {
-        this.appVerifier = new RecaptchaVerifier(this.auth, containerId, {
-            'size': 'invisible',
-            'callback': () => {
-                // reCAPTCHA solved
-            }
-        });
-    }
-
-    // 2. Request SMS OTP
-    async sendOtp(phoneNumber: string): Promise<void> {
-        if (!this.appVerifier) throw new Error('RecaptchaVerifier not initialized');
-
-        // Auto-append Mexico country code as per specs
-        const formattedNumber = `+52${phoneNumber}`;
-
+    // 1. Login with Email & Password
+    async login(email: string, password: string): Promise<User> {
         try {
-            this.confirmationResult = await signInWithPhoneNumber(this.auth, formattedNumber, this.appVerifier);
+            const result = await signInWithEmailAndPassword(this.auth, email, password);
+            return result.user;
         } catch (error) {
-            console.error('Error sending SMS OTP', error);
+            console.error('Error in login', error);
             throw error;
         }
     }
 
-    // 3. Verify OTP Code
-    async verifyOtp(code: string): Promise<User> {
-        if (!this.confirmationResult) throw new Error('No pending OTP verification');
-
+    // 2. Register new User and Profile
+    async register(data: { email: string, password: string, fullName: string, phoneNumber: string }): Promise<User> {
         try {
-            const result = await this.confirmationResult.confirm(code);
+            const result = await createUserWithEmailAndPassword(this.auth, data.email, data.password);
+
+            // Create the profile in Firestore immediately
+            const newProfile: AdvisorProfile = {
+                uid: result.user.uid,
+                email: data.email,
+                phoneNumber: data.phoneNumber,
+                fullName: data.fullName,
+                profilePhotoUrl: 'assets/default-avatar.png',
+                isActive: true,
+                createdAt: Date.now(),
+                vigenciaVIP: 0,
+                vigenciaPremium: 0
+            };
+
+            await setDoc(doc(this.firestore, `advisors/${result.user.uid}`), newProfile);
+            this.currentProfileSubject.next(newProfile);
+
             return result.user;
         } catch (error) {
-            console.error('Error verifying OTP', error);
+            console.error('Error in register', error);
+            throw error;
+        }
+    }
+
+    // 3. Reset Password
+    async sendPasswordReset(email: string): Promise<void> {
+        await sendPasswordResetEmail(this.auth, email);
+    }
+
+    // 4. Update Password (with re-authentication)
+    async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+        const user = this.auth.currentUser;
+        if (!user || !user.email) throw new Error('No user logged in');
+
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+        try {
+            await reauthenticateWithCredential(user, credential);
+            await updatePassword(user, newPassword);
+        } catch (error) {
+            console.error('Error changing password', error);
             throw error;
         }
     }
@@ -108,17 +136,15 @@ export class AuthService {
         }
     }
 
-    // 5. Create Profile (Onboarding)
+    // 5. Complete Profile (Onboarding - Optional if handled by register)
     async completeProfile(fullName: string, profilePhotoUrl: string = ''): Promise<void> {
         const user = this.currentUser;
         if (!user) throw new Error('Cannot create profile without an active auth session');
 
-        // Phone format in DB should be 10 digits as per specs
-        const cleanPhone = user.phoneNumber?.replace('+52', '') || '';
-
         const newProfile: AdvisorProfile = {
             uid: user.uid,
-            phoneNumber: cleanPhone,
+            email: user.email || '',
+            phoneNumber: '', // Should be provided if not handled in register
             fullName,
             profilePhotoUrl: profilePhotoUrl || 'assets/default-avatar.png',
             isActive: true,

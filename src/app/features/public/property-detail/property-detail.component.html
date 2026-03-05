@@ -19,36 +19,36 @@
         <!-- Native Bootstrap Carousel -->
         <div id="propertyCarousel" class="carousel slide h-100" data-bs-ride="carousel" *ngIf="property.media?.images?.length">
             
-            <!-- Indicators -->
-            <div class="carousel-indicators mb-4 z-3" *ngIf="property.media!.images!.length > 1">
+            <!-- Modern Indicators -->
+            <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 z-3 d-flex align-items-center" *ngIf="property.media!.images!.length > 1">
                 <button *ngFor="let img of property.media?.images; let i = index" 
-                        type="button" 
-                        data-bs-target="#propertyCarousel" 
-                        [attr.data-bs-slide-to]="i" 
-                        [class.active]="i === 0" 
-                        aria-current="true" 
+                        class="carousel-dot border-0 p-0"
+                        [class.active]="i === currentSlide" 
+                        (click)="$event.stopPropagation(); goToSlide(i)"
                         [attr.aria-label]="'Slide ' + i"></button>
             </div>
 
             <div class="carousel-inner h-100">
                 <div class="carousel-item h-100" 
                      *ngFor="let img of property.media?.images; let i = index" 
-                     [class.active]="i === 0"
+                     [class.active]="i === currentSlide"
                      (click)="openLightbox(i)"
                      style="cursor: zoom-in;">
-                    <img [src]="img" class="d-block w-100 h-100" style="object-fit: cover; opacity: 0.9;" alt="Property Image">
+                    <img [src]="img" class="d-block w-100 h-100 animate-fade" style="object-fit: cover; opacity: 0.9;" alt="Property Image">
                 </div>
             </div>
             
-            <!-- Default Controls -->
-            <button class="carousel-control-prev z-3" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev" *ngIf="property.media!.images!.length > 1">
-                <span class="carousel-control-prev-icon bg-dark rounded-circle p-3 shadow" aria-hidden="true" style="opacity: 0.8 !important;"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next z-3" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next" *ngIf="property.media!.images!.length > 1">
-                <span class="carousel-control-next-icon bg-dark rounded-circle p-3 shadow" aria-hidden="true" style="opacity: 0.8 !important;"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            <!-- Modern Custom Controls -->
+            <div class="carousel-control-prev z-3" *ngIf="property.media!.images!.length > 1">
+                <button class="carousel-btn border-0" (click)="$event.stopPropagation(); prevSlide()">
+                    <mat-icon>chevron_left</mat-icon>
+                </button>
+            </div>
+            <div class="carousel-control-next z-3" *ngIf="property.media!.images!.length > 1">
+                <button class="carousel-btn border-0" (click)="$event.stopPropagation(); nextSlide()">
+                    <mat-icon>chevron_right</mat-icon>
+                </button>
+            </div>
         </div>
 
         <!-- Fallback for no images -->
@@ -59,7 +59,7 @@
         
         <!-- Navbar Overlay with Logo -->
         <div class="position-absolute top-0 w-100 p-3 d-flex justify-content-between align-items-center z-3" style="background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center logo-clickable" (click)="goToHome()">
                 <img src="logo-inmolinks.png" class="me-2" height="32" alt="InmoLinks Logo">
                 <h4 class="text-white fw-bold mb-0">InmoLinks</h4>
             </div>

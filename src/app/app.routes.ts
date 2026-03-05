@@ -7,9 +7,13 @@ import { DashboardLayoutComponent } from './features/dashboard/dashboard-layout/
 import { PropertyListComponent } from './features/dashboard/property-list/property-list.component';
 import { PropertyFormComponent } from './features/dashboard/property-form/property-form.component';
 import { PropertyDetailComponent } from './features/public/property-detail/property-detail.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'complete-profile', component: CompleteProfileComponent, canActivate: [authGuard] },
     {
         path: 'dashboard',

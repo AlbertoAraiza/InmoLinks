@@ -20,7 +20,6 @@ import { Router } from '@angular/router';
 export class DashboardLayoutComponent {
     authService = inject(AuthService);
     router = inject(Router);
-    isSidebarOpen = false;
 
     logout() {
         this.authService.logout().then(() => {

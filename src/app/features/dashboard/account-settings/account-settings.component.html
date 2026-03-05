@@ -1,7 +1,19 @@
+<div class="row mb-4 align-items-center">
+    <div class="col-auto">
+        <button mat-icon-button routerLink="/dashboard" color="primary">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+    </div>
+    <div class="col">
+        <h2 class="mb-0 fw-bold text-dark fs-4 fs-md-2">Mi Cuenta</h2>
+        <p class="text-muted small mb-0 d-none d-md-block">Administra tu perfil y plan de suscripción.</p>
+    </div>
+</div>
+
 <div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-9">
         
-        <h2 class="fw-bold mb-4">Información de Cuenta</h2>
+        <h3 class="fw-bold mb-3 fs-5">Información Personal</h3>
 
         <!-- Profile Card -->
         <mat-card class="shadow-sm border-0 rounded-4 mb-4">
@@ -29,10 +41,16 @@
                             </mat-form-field>
                             
                             <mat-form-field appearance="outline" class="w-100 mb-2">
+                                <mat-label>Correo Electrónico (Solo lectura)</mat-label>
+                                <input matInput [value]="profile.email" readonly disabled>
+                                <mat-icon matSuffix>email</mat-icon>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-100 mb-2">
                                 <mat-label>Celular</mat-label>
-                                <span matTextPrefix>+52 &nbsp;</span>
-                                <input matInput formControlName="phoneNumber">
-                                <mat-hint>El número de celular está vinculado a tu inicio de sesión y no puede modificarse.</mat-hint>
+                                <input matInput formControlName="phoneNumber" maxlength="10">
+                                <mat-icon matSuffix>phone</mat-icon>
+                                <mat-hint>Este número se mostrará en tus propiedades para contacto vía WhatsApp.</mat-hint>
                             </mat-form-field>
                             
                             <div class="text-end">
@@ -47,8 +65,24 @@
             </mat-card-content>
         </mat-card>
 
+        <!-- Security section -->
+        <h3 class="fw-bold mb-3 mt-5 fs-5">Seguridad</h3>
+        <mat-card class="shadow-sm border-0 rounded-4 mb-4">
+            <mat-card-content class="p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1">Contraseña</h4>
+                        <p class="text-muted small mb-0">Se recomienda cambiar tu contraseña periódicamente.</p>
+                    </div>
+                    <button mat-stroked-button color="primary" class="rounded-pill px-4" (click)="changePassword()">
+                        CAMBIAR CONTRASEÑA
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
         <!-- Subscription Plan Card -->
-        <h3 class="fw-bold mb-3 mt-5">Mi Plan en InmoLinks</h3>
+        <h3 class="fw-bold mb-3 mt-5 fs-5">Plan de Suscripción</h3>
         <mat-card class="shadow-sm border-0 rounded-4 mb-4 bg-light">
             <mat-card-content class="p-4" *ngIf="currentStatus">
                 <div class="d-flex justify-content-between align-items-center mb-3">

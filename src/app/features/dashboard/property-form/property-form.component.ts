@@ -2,6 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { firstValueFrom, Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 // Angular Material
 import { MatStepperModule } from '@angular/material/stepper';
@@ -14,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleMapsModule } from '@angular/google-maps';
 
 import { PropertyService } from '../../../core/services/property.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { SubscriptionService } from '../../../core/services/subscription.service';
 import { AdsService } from '../../../core/services/ads.service';
 import Swal from 'sweetalert2';
@@ -31,10 +35,15 @@ import Swal from 'sweetalert2';
 export class PropertyFormComponent implements OnInit {
     private fb = inject(FormBuilder);
     private propertyService = inject(PropertyService);
+    private authService = inject(AuthService);
     private subscriptionService = inject(SubscriptionService);
     private adsService = inject(AdsService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
+    private breakpointObserver = inject(BreakpointObserver);
+
+    isMobile$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+        .pipe(map(result => result.matches));
 
     isEditMode = false;
     editPropertyId: string | null = null;
@@ -94,6 +103,14 @@ export class PropertyFormComponent implements OnInit {
                 this.editPropertyId = id;
                 this.loadPropertyForEdit(id);
             } else {
+                // Determine if we have a profile loaded, otherwise wait for auth state to settle on hard refresh
+                let currentProfile = this.authService.currentProfile;
+                if (!currentProfile) {
+                    currentProfile = await firstValueFrom(
+                        this.authService.currentProfile$.pipe(filter(profile => profile !== null))
+                    );
+                }
+
                 const canAdd = await this.subscriptionService.canAddProperty();
                 if (!canAdd) {
                     Swal.fire('Límite Alcanzado', 'Has alcanzado el límite de propiedades de tu plan actual. Para seguir publicando, mejora tu plan.', 'warning').then(() => {
