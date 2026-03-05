@@ -43,7 +43,29 @@ export class PropertyListComponent implements OnInit {
     copyLink(propertyId: string) {
         // We will assume the site is hosted at the current window location origin
         const url = `${window.location.origin}/p/${propertyId}`;
-        navigator.clipboard.writeText(url).then(() => {
+
+        const copyToClipboard = (text: string) => {
+            if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                return new Promise<void>((resolve, reject) => {
+                    const el = document.createElement('textarea');
+                    el.value = text;
+                    document.body.appendChild(el);
+                    el.select();
+                    try {
+                        document.execCommand('copy');
+                        resolve();
+                    } catch (err) {
+                        reject(err);
+                    } finally {
+                        document.body.removeChild(el);
+                    }
+                });
+            }
+        };
+
+        copyToClipboard(url).then(() => {
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -52,6 +74,9 @@ export class PropertyListComponent implements OnInit {
                 icon: 'success',
                 title: 'Enlace Copiado'
             });
+        }).catch(err => {
+            Swal.fire('Error', 'No se pudo copiar el enlace', 'error');
+            console.error(err);
         });
     }
 
