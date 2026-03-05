@@ -14,7 +14,7 @@
         
         <!-- Step 1: Basics -->
         <mat-step [stepControl]="basicFormGroup">
-            <form [formGroup]="basicFormGroup" class="pt-4 px-2 px-md-4">
+            <form [formGroup]="basicFormGroup" class="pt-4 px-0 px-md-4">
             <ng-template matStepLabel>Detalles Básicos</ng-template>
             
             <mat-form-field appearance="outline" class="w-100 mb-3">
@@ -44,7 +44,7 @@
     
         <!-- Step 2: Location -->
         <mat-step [stepControl]="locationFormGroup">
-            <form [formGroup]="locationFormGroup" class="pt-4 px-2 px-md-4">
+            <form [formGroup]="locationFormGroup" class="pt-4 px-0 px-md-4">
             <ng-template matStepLabel>Ubicación</ng-template>
             
             <div class="row">
@@ -111,7 +111,7 @@
 
         <!-- Step 3: Features -->
         <mat-step [stepControl]="featuresFormGroup">
-            <form [formGroup]="featuresFormGroup" class="pt-4 px-2 px-md-4">
+            <form [formGroup]="featuresFormGroup" class="pt-4 px-0 px-md-4">
             <ng-template matStepLabel>Ficha Técnica</ng-template>
             
             <div class="row">
@@ -155,7 +155,7 @@
         <!-- Step 4: Finish / Upload Placeholder -->
         <mat-step>
         <ng-template matStepLabel>Multimedia & Publicar</ng-template>
-        <div class="text-center py-4">
+        <div class="text-center py-2 py-md-4 px-0 px-md-4">
             
             <div class="border border-dashed rounded-4 p-5 mb-4 bg-light text-secondary position-relative">
                 <input type="file" multiple accept="image/*" class="d-none" #fileInput (change)="onImagesSelected($event)">

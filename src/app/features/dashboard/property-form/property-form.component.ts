@@ -30,7 +30,25 @@ import Swal from 'sweetalert2';
         MatStepperModule, MatFormFieldModule, MatInputModule,
         MatButtonModule, MatSelectModule, MatIconModule, MatProgressSpinnerModule
     ],
-    templateUrl: './property-form.component.html'
+    templateUrl: './property-form.component.html',
+    styles: [`
+        @media (max-width: 768px) {
+            ::ng-deep .mat-vertical-content-container {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            ::ng-deep .mat-vertical-stepper-header {
+                padding: 16px 8px !important;
+            }
+            ::ng-deep .mat-stepper-vertical {
+                padding: 0 !important;
+                margin-top: -16px;
+            }
+            ::ng-deep .mat-vertical-content {
+                padding: 0 8px 16px 8px !important;
+            }
+        }
+    `]
 })
 export class PropertyFormComponent implements OnInit {
     private fb = inject(FormBuilder);
@@ -205,9 +223,15 @@ export class PropertyFormComponent implements OnInit {
         if (!neighborhood || !zipCode) return;
 
         this.isSearchingMap = true;
-        const geocoder = new google.maps.Geocoder();
 
         try {
+            if (typeof google === 'undefined' || !google.maps) {
+                this.isSearchingMap = false;
+                Swal.fire('Aviso de Red', 'No pudimos conectar con los servicios de Google Maps. Asegúrate de estar conectado a internet y de no tener bloqueadores de red activos.', 'warning');
+                return;
+            }
+
+            const geocoder = new google.maps.Geocoder();
             // Check if address is a Maps URL
             const mapsUrlRegex = /(?:https?:\/\/)?(?:www\.)?(?:google\.com\/maps\/place\/|goo\.gl\/maps\/|maps\.app\.goo\.gl\/)/;
 

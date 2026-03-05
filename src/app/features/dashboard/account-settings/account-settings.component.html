@@ -17,7 +17,7 @@
 
         <!-- Profile Card -->
         <mat-card class="shadow-sm border-0 rounded-4 mb-4">
-            <mat-card-content class="p-4" *ngIf="authService.currentProfile$ | async as profile">
+            <mat-card-content class="p-3 p-md-4" *ngIf="authService.currentProfile$ | async as profile">
                 <div class="d-flex flex-column flex-md-row align-items-center">
                     
                     <div class="position-relative me-md-5 mb-4 mb-md-0 text-center">
@@ -68,7 +68,7 @@
         <!-- Security section -->
         <h3 class="fw-bold mb-3 mt-5 fs-5">Seguridad</h3>
         <mat-card class="shadow-sm border-0 rounded-4 mb-4">
-            <mat-card-content class="p-4">
+            <mat-card-content class="p-3 p-md-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h4 class="fw-bold mb-1">Contraseña</h4>
@@ -84,7 +84,7 @@
         <!-- Subscription Plan Card -->
         <h3 class="fw-bold mb-3 mt-5 fs-5">Plan de Suscripción</h3>
         <mat-card class="shadow-sm border-0 rounded-4 mb-4 bg-light">
-            <mat-card-content class="p-4" *ngIf="currentStatus">
+            <mat-card-content class="p-3 p-md-4" *ngIf="currentStatus">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h4 class="fw-bold fs-3 text-primary mb-0">Plan {{ currentStatus.plan }}</h4>
