@@ -47,9 +47,8 @@ export class RegisterComponent {
             phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
             password: ['', [
                 Validators.required,
-                Validators.minLength(8),
-                Validators.maxLength(20),
-                Validators.pattern(/^(?=.*[a-zA-Z])(?=.*[0-9]).*$/) // Al menos una letra y un número
+                Validators.minLength(6),
+                Validators.maxLength(20)
             ]],
             confirmPassword: ['', [Validators.required]]
         }, { validators: this.passwordMatchValidator });

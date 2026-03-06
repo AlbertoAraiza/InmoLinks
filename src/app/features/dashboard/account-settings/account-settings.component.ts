@@ -169,10 +169,8 @@ export class AccountSettingsComponent implements OnInit {
                     Swal.showValidationMessage('Las nuevas contraseñas no coinciden');
                     return false;
                 }
-                // Regla: 8-20 chars, 1 letra, 1 número
-                const passRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/;
-                if (!passRegex.test(newPass)) {
-                    Swal.showValidationMessage('La contraseña debe tener entre 8 y 20 caracteres, incluyendo al menos una letra y un número');
+                if (newPass.length < 6 || newPass.length > 20) {
+                    Swal.showValidationMessage('La contraseña debe tener entre 6 y 20 caracteres');
                     return false;
                 }
 
