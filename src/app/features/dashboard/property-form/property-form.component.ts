@@ -369,4 +369,22 @@ export class PropertyFormComponent implements OnInit {
             this.isLoading = false;
         }
     }
+
+    cancelForm() {
+        Swal.fire({
+            title: '¿Cancelar captura?',
+            text: 'Toda la información no guardada se perderá definitivamente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, salir sin guardar',
+            cancelButtonText: 'Continuar editando',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.router.navigate(['/dashboard']);
+            }
+        });
+    }
 }

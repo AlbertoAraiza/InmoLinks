@@ -72,7 +72,7 @@ export class RegisterComponent {
             Swal.fire({
                 icon: 'success',
                 title: '¡Cuenta Creada!',
-                text: 'Bienvenido a InmoLinks Pro.',
+                text: 'Bienvenido a InmoLinks.',
                 showConfirmButton: false,
                 timer: 2000
             });
