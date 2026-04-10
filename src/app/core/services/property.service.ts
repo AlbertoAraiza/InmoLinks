@@ -69,7 +69,7 @@ export class PropertyService {
             status: propertyData.status || 'draft',
             media: {
                 images: uploadedUrls,
-                videos: []
+                videos: propertyData.media?.videos || []
             }
         } as PropertyListing;
 
@@ -100,13 +100,19 @@ export class PropertyService {
 
         const docRef = doc(this.firestore, `properties/${propertyId}`);
 
-        const updateData: any = {
-            ...propertyData,
-            'media.images': combinedImages
-        };
+        // Construct update object to avoid overwriting nested parts of 'media'
+        const updateData: any = { ...propertyData };
+        
+        // Remove 'media' object from root if it exists to use dot notation for nested fields
+        if (updateData.media) {
+            if (updateData.media.videos) {
+                updateData['media.videos'] = updateData.media.videos;
+            }
+            delete updateData.media;
+        }
+        
+        updateData['media.images'] = combinedImages;
 
-        // Note: For deep updates like media, it's safer to use updateDoc passing only the changed fields
-        // Here we just merge to avoid overwriting advisor info
         await updateDoc(docRef, updateData);
     }
 

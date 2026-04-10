@@ -1,11 +1,13 @@
-<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
   <div>
     <h2 class="mb-0 fw-bold text-dark d-none d-md-flex align-items-center">Mis Propiedades <span class="badge bg-primary rounded-pill small ms-2">{{ properties.length }}</span></h2>
     <h3 class="mb-0 fw-bold text-dark d-flex d-md-none align-items-center">Mis Propiedades <span class="badge bg-primary rounded-pill small ms-2">{{ properties.length }}</span></h3>
   </div>
-  <button mat-flat-button color="accent" class="rounded-pill px-4 shadow-sm fw-bold w-100 w-sm-auto" (click)="checkAddProperty()">
-    <mat-icon>add</mat-icon> NUEVA PROPIEDAD
-  </button>
+  <div class="mt-2 mt-md-0">
+    <button mat-flat-button color="accent" class="rounded-pill px-4 shadow-sm fw-bold" (click)="checkAddProperty()">
+      <mat-icon>add</mat-icon> NUEVA PROPIEDAD
+    </button>
+  </div>
 </div>
 
 <!-- Loading State -->

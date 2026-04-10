@@ -152,11 +152,23 @@
             </form>
         </mat-step>
     
-        <!-- Step 4: Finish / Upload Placeholder -->
-        <mat-step>
+        <!-- Step 4: Multimedia & Finish -->
+        <mat-step [stepControl]="mediaFormGroup">
         <ng-template matStepLabel>Multimedia & Publicar</ng-template>
         <div class="text-center py-2 py-md-4 px-0 px-md-4">
             
+            <!-- Video URL Input -->
+            <div class="text-start mb-4">
+                <form [formGroup]="mediaFormGroup">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Link de Video de YouTube (Opcional)</mat-label>
+                        <input matInput formControlName="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                        <mat-icon matPrefix class="me-2 text-danger">play_circle</mat-icon>
+                        <mat-hint>Pega el enlace de un video de YouTube para mostrar un recorrido virtual.</mat-hint>
+                    </mat-form-field>
+                </form>
+            </div>
+
             <div class="border border-dashed rounded-4 p-5 mb-4 bg-light text-secondary position-relative">
                 <input type="file" multiple accept="image/*" class="d-none" #fileInput (change)="onImagesSelected($event)">
                 <button mat-flat-button color="accent" (click)="fileInput.click()" type="button"><mat-icon>upload_file</mat-icon> SELECCIONAR FOTOS</button>

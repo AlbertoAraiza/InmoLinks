@@ -110,7 +110,9 @@ export class PropertyFormComponent implements OnInit {
             constructionAreaSqM: [0, [Validators.required, Validators.min(0)]],
         });
 
-        this.mediaFormGroup = this.fb.group({});
+        this.mediaFormGroup = this.fb.group({
+            videoUrl: ['']
+        });
     }
 
     ngOnInit() {
@@ -175,9 +177,14 @@ export class PropertyFormComponent implements OnInit {
                     this.updateMapPosition(property.location.approxLat, property.location.approxLng);
                 }
 
-                // Restore existing images
+                // Restore existing images and videos
                 if (property.media?.images) {
                     this.existingImageUrls = [...property.media.images];
+                }
+                if (property.media?.videos && property.media.videos.length > 0) {
+                    this.mediaFormGroup.patchValue({
+                        videoUrl: property.media.videos[0]
+                    });
                 }
             } else {
                 Swal.fire('Error', 'Propiedad no encontrada', 'error');
@@ -339,7 +346,10 @@ export class PropertyFormComponent implements OnInit {
                 approxLat: this.locationFormGroup.value.lat, // Legacy property format map
                 approxLng: this.locationFormGroup.value.lng
             },
-            features: this.featuresFormGroup.value
+            features: this.featuresFormGroup.value,
+            media: {
+                videos: [this.mediaFormGroup.value.videoUrl].filter(v => !!v)
+            }
         };
 
         try {

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,7 @@ export class AccountSettingsComponent implements OnInit {
     private fb = inject(FormBuilder);
     public authService = inject(AuthService);
     public subscriptionService = inject(SubscriptionService);
+    private route = inject(ActivatedRoute);
 
     profileForm: FormGroup;
     isLoading = false;
@@ -38,6 +39,19 @@ export class AccountSettingsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.route.queryParams.subscribe(params => {
+            if (params['status'] === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Pago Procesado!',
+                    text: 'Estamos validando tu pago. Los cambios se verán reflejados en unos momentos.',
+                    timer: 5000
+                });
+            } else if (params['status'] === 'cancel') {
+                Swal.fire('Pago Cancelado', 'No se realizó ningún cobro.', 'info');
+            }
+        });
+
         this.authService.currentProfile$.subscribe(profile => {
             if (profile) {
                 this.profileForm.patchValue({
@@ -106,7 +120,7 @@ export class AccountSettingsComponent implements OnInit {
             title: `Contratar Plan ${plan}`,
             html: `
                 <p class="mb-2 fw-bold text-primary">${limitText}</p>
-                <p class="text-muted small">Selecciona una vigencia. (Simulador de Stripe)</p>
+                <p class="text-muted small">Serás redirigido a la pasarela segura de Stripe.</p>
             `,
             icon: 'info',
             input: 'radio',
@@ -121,24 +135,25 @@ export class AccountSettingsComponent implements OnInit {
                 return null;
             },
             showCancelButton: true,
-            confirmButtonText: 'Pagar con Stripe',
+            confirmButtonText: 'Continuar al Pago',
             cancelButtonText: 'Cancelar'
         });
 
         if (result.isConfirmed && result.value) {
             this.isLoading = true;
-            Swal.fire({ title: 'Procesando Pago...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({
+                title: 'Preparando Pago...',
+                text: 'Por favor no cierres esta ventana',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
             try {
-                // Simulate HTTP delay
-                await new Promise(r => setTimeout(r, 2000));
-
-                // Process the mock purchase
-                await this.subscriptionService.simulatePurchase(plan, parseInt(result.value) as 30 | 60);
-
-                Swal.fire('¡Pago Exitoso!', `Ahora tienes el Plan ${plan} por ${result.value} días.`, 'success');
+                console.log('Starting checkout for plan:', plan, 'for', result.value, 'days');
+                await this.subscriptionService.startStripeCheckout(plan, parseInt(result.value) as 30 | 60);
             } catch (e: any) {
                 console.error(e);
-                Swal.fire('Error en el pago', e.message, 'error');
+                Swal.fire('Error', 'No se pudo iniciar la sesión de pago. Intenta de nuevo.', 'error');
             } finally {
                 this.isLoading = false;
             }

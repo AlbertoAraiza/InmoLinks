@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 
 // Material
@@ -88,6 +89,7 @@ export class PropertyDetailComponent implements OnInit {
     private router = inject(Router);
     private firestore = inject(Firestore);
     private dialog = inject(MatDialog);
+    private sanitizer = inject(DomSanitizer);
     public authService = inject(AuthService);
 
     property: PropertyListing | null = null;
@@ -280,5 +282,21 @@ export class PropertyDetailComponent implements OnInit {
         } else {
             this.router.navigate(['/login']);
         }
+    }
+
+    get videoSafeUrl(): SafeResourceUrl | null {
+        const videoUrl = this.property?.media?.videos?.[0];
+        if (!videoUrl) return null;
+
+        const videoId = this.extractYouTubeId(videoUrl);
+        if (!videoId) return null;
+
+        return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}`);
+    }
+
+    private extractYouTubeId(url: string): string | null {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
     }
 }
