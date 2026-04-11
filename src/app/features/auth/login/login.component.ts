@@ -31,7 +31,7 @@ import Swal from 'sweetalert2';
     ],
     templateUrl: './login.component.html'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
     private router = inject(Router);
@@ -44,6 +44,15 @@ export class LoginComponent {
         this.loginForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(8)]]
+        });
+    }
+
+    ngOnInit(): void {
+        // Redirigir si ya hay una sesión activa al cargar el login
+        this.authService.currentUser$.subscribe(user => {
+            if (user && !this.isLoading) {
+                this.router.navigate(['/dashboard']);
+            }
         });
     }
 

@@ -369,8 +369,6 @@ export class PropertyFormComponent implements OnInit {
                 });
             }
 
-            // Show Interstitial Ad if user is on Free plan
-            await this.adsService.showInterstitialAd();
 
         } catch (error: any) {
             console.error(error);

@@ -41,8 +41,8 @@ export class PropertyListComponent implements OnInit {
     }
 
     copyLink(propertyId: string) {
-        // We will assume the site is hosted at the current window location origin
-        const url = `${window.location.origin}/p/${propertyId}`;
+        // We will assume the site is hosted at the current window location origin + /inmolinks
+        const url = `${window.location.origin}/inmolinks/p/${propertyId}`;
 
         const copyToClipboard = (text: string) => {
             if (navigator && navigator.clipboard && navigator.clipboard.writeText) {

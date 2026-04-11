@@ -27,6 +27,6 @@ export const routes: Routes = [
         ]
     },
     { path: 'p/:id', component: PropertyDetailComponent },
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     { path: '**', redirectTo: 'login' }
 ];

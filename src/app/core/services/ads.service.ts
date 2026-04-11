@@ -9,41 +9,24 @@ import { PropertyService } from './property.service';
 })
 export class AdsService {
     private subscriptionService = inject(SubscriptionService);
+    private scriptLoaded = false;
 
-    // Mocks an AdMob Interstitial Ad taking over the screen for 3 seconds
-    async showInterstitialAd(): Promise<void> {
-        const profile$ = this.subscriptionService.subscriptionStatus$;
-        const status = await firstValueFrom(profile$);
+    constructor() {
+        this.subscriptionService.subscriptionStatus$.subscribe(status => {
+            if (status.hasAds && !this.scriptLoaded) {
+                this.loadAdSense();
+            }
+        });
+    }
 
-        if (status.hasAds) {
-            return new Promise((resolve) => {
-                let timerInterval: any;
-                Swal.fire({
-                    title: 'PUBLICIDAD',
-                    html: 'Anuncio patrocinado por Google AdMob... <br><br> <b>3</b>',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    willOpen: () => {
-                        const confirmBtn = Swal.getConfirmButton();
-                        if (confirmBtn) confirmBtn.style.display = 'none';
-                    },
-                    didOpen: () => {
-                        const b = Swal.getHtmlContainer()?.querySelector('b');
-                        timerInterval = setInterval(() => {
-                            if (b && Swal.getTimerLeft()) {
-                                b.textContent = `${Math.ceil(Swal.getTimerLeft()! / 1000)}`;
-                            }
-                        }, 100);
-                    },
-                    willClose: () => {
-                        clearInterval(timerInterval);
-                    }
-                }).then(() => {
-                    resolve();
-                });
-            });
-        }
+    private loadAdSense() {
+        if (this.scriptLoaded) return;
+        
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8257518278474067';
+        script.crossOrigin = 'anonymous';
+        document.head.appendChild(script);
+        this.scriptLoaded = true;
     }
 }
